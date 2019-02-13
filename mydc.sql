@@ -55,7 +55,7 @@ CREATE TABLE mydc_reservation(
   contactTime BIGINT,
   dinnerTime BIGINT,
   tableId INT,
-  FOREIGN KEY(tableId) REFERENCES xfn_table(tid)
+  FOREIGN KEY(tableId) REFERENCES mydc_table(tid)
 );
 INSERT INTO mydc_reservation VALUES
 (NULL, '丁丁', '13501234561', '1548311700000', '1549011000000', '1'),
@@ -83,7 +83,7 @@ INSERT INTO mydc_reservation VALUES
 /*菜品类别*/
 CREATE TABLE mydc_category(
   cid INT PRIMARY KEY AUTO_INCREMENT,
-  cname VARCHAR(32)
+  cname VARCHAR(32) UNIQUE
 );
 INSERT INTO mydc_category VALUES
 (1, '肉类'),
