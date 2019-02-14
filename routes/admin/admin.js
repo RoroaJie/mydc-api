@@ -6,8 +6,8 @@ const pool = require('../../pool');
 var router = express.Router();
 module.exports = router;
 
-/*  GET请求可以有主体吗？
-*API:  GET /admin/login/:aname/:apwd   
+/*
+*GET /admin/login/:aname/:apwd   
 *完成用户登录验证(提示：有的项目中此处选择POST请求)
 *返回数据：
 * {code: 200, msg: 'login succ'}
@@ -17,7 +17,7 @@ router.get('/login/:aname/:apwd', (req, res)=>{
   var aname = req.params.aname;
   var apwd = req.params.apwd;
   //需要对用户输入的密码执行加密函数
-  pool.query('SELECT aid FROM mydc_admin WHERE aname=? AND apwd=PASSWORD(?)', [aname, apwd], (err, result)=>{
+  pool.query('SELECT aid FROM xfn_admin WHERE aname=? AND apwd=PASSWORD(?)', [aname, apwd], (err, result)=>{
     if(err)throw err;
     if(result.length>0){   //查询到一行数据，登录成功
       res.send({code:200, msg:'login succ'})
@@ -39,14 +39,14 @@ router.get('/login/:aname/:apwd', (req, res)=>{
 router.patch('/', (req, res)=>{       
   var data = req.body; //{aname:'', oldPwd:'',newPwd:''}
   //首先根据aname/oldPwd查询该用户是否存在
-  pool.query('SELECT aid FROM mydc_admin WHERE aname=? AND apwd=PASSWORD(?)', [data.aname, data.oldPwd], (err, result)=>{
+  pool.query('SELECT aid FROM xfn_admin WHERE aname=? AND apwd=PASSWORD(?)', [data.aname, data.oldPwd], (err, result)=>{
     if(err)throw err;
     if(result.length==0){
       res.send({code:400, msg:'password err'});
       return;
     }
     //如果查询到了用户，再修改其密码
-    pool.query('UPDATE mydc_admin SET apwd=PASSWORD(?) WHERE aname=?', [data.newPwd, data.aname], (err, result)=>{
+    pool.query('UPDATE xfn_admin SET apwd=PASSWORD(?) WHERE aname=?', [data.newPwd, data.aname], (err, result)=>{
         if(err)throw err;
         if(result.changedRows>0){  //密码修改完成
           res.send({code:200, msg:'modify succ'})

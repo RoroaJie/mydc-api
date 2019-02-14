@@ -1,11 +1,11 @@
-/**
- * 菜品类别相关
- */
-// 创建路由器
-const  express=require('express');
-const  pool=require('../../pool');
-var router=express.Router();
-module.exports=router;
+/*
+*菜品类别相关的路由
+*/
+//创建路由器
+const express = require('express');
+const pool = require('../../pool');
+var router = express.Router();
+module.exports = router;
 
 /*
 *GET /admin/category     
@@ -13,12 +13,13 @@ module.exports=router;
 *返回值形如：
 *  [{cid: 1, cname: '..'}, {...}]
 */
-router.get('/',(req,res)=>{
-    pool.query('SELECT * FROM mydc_category ORDER BY cid',(err,result)=>{
-        if(err) throw err;
-        res.send(result);
-    })
+router.get('/', (req, res) => {
+  pool.query('SELECT * FROM xfn_category ORDER BY cid', (err, result) => {
+    if (err) throw err;
+    res.send(result);
+  })
 })
+
 
 /*
 *API:  DELETE /admin/category/:cid
@@ -27,17 +28,24 @@ router.get('/',(req,res)=>{
 *  {code: 200, msg: '1 category deleted' }
 *  {code: 400, msg: '0 category deleted' }
 */
-router.delete("/:cid",(req,res)=>{
-    pool.query("DELETE FROM mydc_category WHERE cid=?",req.params.cid,(err,result)=>{
-        if(err) throw err;
-        // console.log(req.params.cid);
-        if(result.affectedRows>0){
-            res.send({code:200,msg:'1 category deleted'})
-        }else{
-            res.send({code:400,msg:'0 category deleted'})
-        }
+router.delete('/:cid', (req, res) => {
+  //注意：删除菜品类别前必须先把属于该类别的菜品的类别编号设置为NULL
+  pool.query('UPDATE xfn_dish SET categoryId=NULL WHERE categoryId=?', req.params.cid, (err, result) => {
+    if (err) throw err;
+    //至此指定类别的菜品已经修改完毕
+    pool.query('DELETE FROM xfn_category WHERE cid=?', req.params.cid, (err, result) => {
+      if (err) throw err;
+      //获取DELETE语句在数据库中影响的行数
+      if (result.affectedRows > 0) {
+        res.send({ code: 200, msg: '1 category deleted' })
+      } else {
+        res.send({ code: 400, msg: '0 category deleted' })
+      }
     })
+  })
 })
+
+
 
 /*
 *API:  POST /admin/category  
@@ -46,15 +54,18 @@ router.delete("/:cid",(req,res)=>{
 *返回值形如：
 *  {code: 200, msg: '1 category added', cid: x }
 */
-router.post("/",(req,res)=>{
-    var data=req.body;
-    console.log(data);
-    pool.query('INSERT INTO mydc_category SET ?',[data] ,(err,result)=>{
-        if(err) throw err;
-        console.log(result);
-        res.send({code:1,msg:'1 category added'});
-    })
+router.post('/', (req, res)=>{
+  var data = req.body;   //形如{cname: 'xxx', }
+  pool.query('INSERT INTO xfn_category SET ?', data, (err, result)=>{  //注意此处SQL语句的简写
+    if(err)throw err;
+    res.send({
+		code: 200, 
+		msg: '1 category added',
+		cid: result.insertId
+	});
+  })
 })
+
 /*
 *API:  PUT /admin/category
 *请求参数：{cid: xx, cname:'xxx'}
@@ -64,20 +75,17 @@ router.post("/",(req,res)=>{
 *  {code: 400, msg: '0 category modified, not exists' }
 *  {code: 401, msg: '0 category modified, no modification' }
 */
-router.put("/",(req,res)=>{
-    var data=req.body;   //请求数据 {cid:xx,cname:'xx'}
-    // console.log(data);
-    // TODO : 此处可以对数据进行验证
-    pool.query("UPDATE mydc_category SET ? WHERE cid=?",[data,data.cid],(err,result)=>{
-        if(err) throw err;
-        // console.log(result);
-        if(result. changedRows>0){  //实际修改了一行
-            res.send({code:200,msg:'1 category modified'})
-        }else if(result.affectedRows==0){  //影响到 0行
-            res.send({code:400,msg:'category not exits'})
-        }else if(result.affectedRows==1 && result. changedRows==0){
-            // 影响到1行，但修改了0行---新值与旧值完全一样
-            res.send({code:401,msg:'no category modified'})
-        }
-    })
+router.put('/', (req, res)=>{
+  var data = req.body; //请求数据{cid:xx, cname:'xx'}
+  //TODO: 此处可以对数据数据进行验证
+  pool.query('UPDATE xfn_category SET ? WHERE cid=?', [data, data.cid], (err, result)=>{
+    if(err)throw err;
+    if(result.changedRows>0){  //实际修改了一行
+      res.send({code:200, msg: '1 category modified'})
+    }else if(result.affectedRows==0){  //影响到0行
+      res.send({code:400, msg:'category not exits'})
+    }else if(result.affectedRows==1 && result.changedRows==0){ //影响到1行，但修改了0行——新值与旧值完全一样
+      res.send({code:401, msg:'no category modified'})
+    }
+  })
 })
