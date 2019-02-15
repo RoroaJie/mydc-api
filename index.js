@@ -10,7 +10,7 @@ const categoryRouter = require('./routes/admin/category');
 const adminRouter = require('./routes/admin/admin');
 const dishRouter = require('./routes/admin/dish');
 const settingsRouter = require('./routes/admin/settings');
-const tableRouter = require('./routes/admin/table');
+const tableRouter = require('./routes/admin/table') ;
 
 //创建HTTP应用服务器
 var app = express(); 
