@@ -1,19 +1,20 @@
 SET NAMES UTF8;
-DROP DATABASE IF EXISTS mydc;
-CREATE DATABASE mydc CHARSET=UTF8;
-USE mydc;
+DROP DATABASE IF EXISTS xiaofeiniu;
+CREATE DATABASE xiaofeiniu CHARSET=UTF8;
+USE xiaofeiniu;
+
 /*管理员*/
-CREATE TABLE mydc_admin(
+CREATE TABLE xfn_admin(
   aid INT PRIMARY KEY AUTO_INCREMENT,
   aname VARCHAR(32) UNIQUE,
   apwd VARCHAR(64)
 );
-INSERT INTO mydc_admin VALUES
+INSERT INTO xfn_admin VALUES
 (NULL, 'admin', PASSWORD('123456')),
 (NULL, 'boss', PASSWORD('999999'));
 
 /*全局设置*/
-CREATE TABLE mydc_settings(
+CREATE TABLE xfn_settings(
   sid INT PRIMARY KEY AUTO_INCREMENT,
   appName VARCHAR(32),
   apiUrl VARCHAR(64),
@@ -22,17 +23,17 @@ CREATE TABLE mydc_settings(
   icp VARCHAR(64),
   copyright VARCHAR(128)
 );
-INSERT INTO mydc_settings VALUES
+INSERT INTO xfn_settings VALUES
 (NULL, '小肥牛', 'http://127.0.0.1:8090', 'http://127.0.0.1:8091', 'http://127.0.0.1:8092', '京ICP备12003709号-3', 'Copyright © 北京达内金桥科技有限公司版权所有');
 
 /*桌台表*/
-CREATE TABLE mydc_table(
+CREATE TABLE xfn_table(
   tid INT PRIMARY KEY AUTO_INCREMENT,
   tname VARCHAR(32),
   type VARCHAR(32),
   status INT
 );
-INSERT INTO mydc_table VALUES
+INSERT INTO xfn_table VALUES
 (1, '金镶玉', '2人桌', 1),
 (2, '玉如意', '2人桌', 1),
 (3, '齐天寿', '6人桌', 3),
@@ -48,16 +49,16 @@ INSERT INTO mydc_table VALUES
 (15, '乐逍遥', '2人桌',3);
 
 /*桌台预定信息*/
-CREATE TABLE mydc_reservation(
+CREATE TABLE xfn_reservation(
   rid INT PRIMARY KEY AUTO_INCREMENT,
   contactName VARCHAR(32),
   phone VARCHAR(16),
   contactTime BIGINT,
   dinnerTime BIGINT,
   tableId INT,
-  FOREIGN KEY(tableId) REFERENCES mydc_table(tid)
+  FOREIGN KEY(tableId) REFERENCES xfn_table(tid)
 );
-INSERT INTO mydc_reservation VALUES
+INSERT INTO xfn_reservation VALUES
 (NULL, '丁丁', '13501234561', '1548311700000', '1549011000000', '1'),
 (NULL, '当当', '13501234562', '1548311710000', '1549011100000', '1'),
 (NULL, '豆豆', '13501234563', '1548311720000', '1549011200000', '2'),
@@ -81,11 +82,11 @@ INSERT INTO mydc_reservation VALUES
 (NULL, '丫丫', '13501234568', '1548311910000', '1549011200000', '15');
 
 /*菜品类别*/
-CREATE TABLE mydc_category(
+CREATE TABLE xfn_category(
   cid INT PRIMARY KEY AUTO_INCREMENT,
-  cname VARCHAR(32) UNIQUE
+  cname VARCHAR(32)
 );
-INSERT INTO mydc_category VALUES
+INSERT INTO xfn_category VALUES
 (1, '肉类'),
 (2, '海鲜河鲜'),
 (3, '丸滑类'),
@@ -93,16 +94,16 @@ INSERT INTO mydc_category VALUES
 (5, '菌菇类');
 
 /*菜品*/
-CREATE TABLE mydc_dish(
+CREATE TABLE xfn_dish(
   did INT PRIMARY KEY AUTO_INCREMENT,
   title VARCHAR(32),
   imgUrl VARCHAR(128),
   price DECIMAL(6,2),
   detail VARCHAR(128),
   categoryId INT,
-  FOREIGN KEY(categoryId) REFERENCES mydc_category(cid)
+  FOREIGN KEY(categoryId) REFERENCES xfn_category(cid)
 );
-INSERT INTO mydc_dish VALUES
+INSERT INTO xfn_dish VALUES
 (NULL, '草鱼片', 'r9470.jpg', '35', '选鲜活草鱼，切出鱼片冷鲜保存。锅开后再煮1分钟左右即可食用', '1'),
 (NULL, '脆皮肠', 'r9017.jpg', '15', '锅开后再煮3分钟左右即可食用', '1'),
 (NULL, '酥肉', 'r4760.jpg', '25', '选用冷鲜五花肉，加上鸡蛋，淀粉等原料炸制，色泽黄亮，酥软醇香，肥而不腻。锅开后再煮3分钟左右即可食用', '1'),
@@ -155,15 +156,15 @@ INSERT INTO mydc_dish VALUES
 (NULL, '金针菇', 'j6119.jpg', '28', '经过挑选、清洗、装盘而成。菌盖滑嫩、清脆，锅开后再煮2分钟左右即可食用', '5');
 
 /*订单*/
-CREATE TABLE mydc_order(
+CREATE TABLE xfn_order(
   oid INT PRIMARY KEY AUTO_INCREMENT,
   startTime BIGINT,
   endTime BIGINT,
   customerCount INT,
   tableId INT,
-  FOREIGN KEY(tableId) REFERENCES mydc_table(tid)
+  FOREIGN KEY(tableId) REFERENCES xfn_table(tid)
 );
-INSERT INTO mydc_order VALUES
+INSERT INTO xfn_order VALUES
 (100000, '1547800000000', '1547814918000', '2', '1'),
 (NULL, '1547801000000', '1547824918000', '4', '2'),
 (NULL, '1547802000000', '1547834918000', '3', '3'),
@@ -192,16 +193,16 @@ INSERT INTO mydc_order VALUES
 (NULL, '1547802000000', '', '4', '15');
 
 /*订单详情*/
-CREATE TABLE mydc_order_detail(
+CREATE TABLE xfn_order_detail(
   oid INT PRIMARY KEY AUTO_INCREMENT,
   dishId INT,       /*菜品编号*/
   dishCount INT,    /*份数*/
   customerName VARCHAR(32),    /*顾客名称*/
   orderId INT,      /*订单编号*/
-  FOREIGN KEY(dishId) REFERENCES mydc_dish(did),
-  FOREIGN KEY(orderId) REFERENCES mydc_order(oid)
+  FOREIGN KEY(dishId) REFERENCES xfn_dish(did),
+  FOREIGN KEY(orderId) REFERENCES xfn_order(oid)
 );
-INSERT INTO mydc_order_detail VALUES
+INSERT INTO xfn_order_detail VALUES
 (NULL, '50', '2', '丁丁', '100000'),
 (NULL, '24', '2', '丁丁', '100001'),
 (NULL, '37', '1', '当当', '100002'),
