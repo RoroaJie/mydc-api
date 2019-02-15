@@ -1,7 +1,7 @@
 /**
  *  扫码点餐API子系统 
  */
-const PORT=8090;
+const PORT=5050;
 const express=require("express");
 const pool=require("./pool");
 const cors=require("cors");
